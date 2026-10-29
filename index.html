@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster Studio — Subject & Chapter Exam Portal</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-soft: #eef2ff;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --success-border: #6ee7b7;
+      --success-text: #065f46;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --danger-border: #fca5a5;
+      --danger-text: #991b1b;
+      --warning: #f59e0b;
+      --border: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --summary-bg: #f8fafc;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #818cf8;
+      --primary-soft: rgba(99, 102, 241, 0.16);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.14);
+      --success-border: #059669;
+      --success-text: #6ee7b7;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.14);
+      --danger-border: #dc2626;
+      --danger-text: #fca5a5;
+      --warning: #f59e0b;
+      --border: #1f2937;
+      --border-hover: #374151;
+      --summary-bg: #0f172a;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    body:not(.is-admin) .admin-only {
+      display: none !important;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--primary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand-badge {
+      background: var(--primary);
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .admin-status-pill {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background: var(--surface-alt);
+    }
+
+    .nav-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .theme-toggle-btn {
+      padding: 0.55rem 0.85rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    main {
+      max-width: 1100px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem 2rem;
+      flex: 1;
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: 1.22rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.2rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      filter: brightness(0.95);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-alt);
+      border-color: var(--border-hover);
+    }
+
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-color: var(--danger-border);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Marking Scheme Pill */
+    .scheme-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .scheme-pos { color: var(--success); }
+    .scheme-neg { color: var(--danger); }
+
+    /* Breadcrumb Bar */
+    .breadcrumb-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .breadcrumb-trail {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .breadcrumb-link {
+      color: var(--primary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .breadcrumb-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Full Subject Combined Mock Hero Card */
+    .combined-mock-banner {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(16, 185, 129, 0.08) 100%);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .combined-mock-actions {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .shuffle-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      margin-right: 0.4rem;
+      user-select: none;
+    }
+
+    /* Dashboard Grid (Categories & Chapters) */
+    .tests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* Subject Category Folder Card */
+    .category-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary);
+      opacity: 0.85;
+    }
+
+    .category-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .folder-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      margin-bottom: 1rem;
+    }
+
+    .category-meta-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Chapter Test Card */
+    .test-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .test-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-hover);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--primary-soft);
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .badge-muted {
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .mode-actions {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .mode-btn {
+      width: 100%;
+      justify-content: space-between;
+      padding: 0.7rem 1rem;
+      text-align: left;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+    }
+
+    .mode-btn:hover {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .mode-btn span.mode-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Admin Layout */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background: var(--surface-alt);
+      transition: var(--transition);
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 550px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .question-list-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 0.85rem;
+      background: var(--surface-alt);
+    }
+
+    .q-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .q-item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .q-item-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* Exam Attempt Styles */
+    .exam-topbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .question-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .q-card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .q-number {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+
+    .q-mark-pill {
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .q-mark-pill.earned-pos {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success-border);
+    }
+
+    .q-mark-pill.earned-neg {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-color: var(--danger-border);
+    }
+
+    .q-text {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      white-space: pre-wrap;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      width: 100%;
+      text-align: left;
+      padding: 0.9rem 1.1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      font-size: 0.96rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--border-hover);
+      background: var(--surface-alt);
+    }
+
+    .option-letter {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      color: var(--text-main);
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .option-btn.selected .option-letter {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .option-btn.correct {
+      border-color: var(--success) !important;
+      background: var(--success-bg) !important;
+      color: var(--success-text);
+    }
+
+    .option-btn.correct .option-letter {
+      background: var(--success) !important;
+      color: white !important;
+      border-color: var(--success) !important;
+    }
+
+    .option-btn.incorrect {
+      border-color: var(--danger) !important;
+      background: var(--danger-bg) !important;
+      color: var(--danger-text);
+    }
+
+    .option-btn.incorrect .option-letter {
+      background: var(--danger) !important;
+      color: white !important;
+      border-color: var(--danger) !important;
+    }
+
+    .topic-summary-box {
+      margin-top: 1.25rem;
+      padding: 1.2rem;
+      border-radius: var(--radius-md);
+      background: var(--summary-bg);
+      border-left: 4px solid var(--primary);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .summary-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .summary-content {
+      font-size: 0.93rem;
+      color: var(--text-main);
+      white-space: pre-wrap;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: var(--surface-alt);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    .palette-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .palette-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: var(--transition);
+    }
+
+    .palette-dot.current {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
+    }
+
+    .palette-dot.answered-correct {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    .palette-dot.answered-wrong {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+
+    /* Score Banner */
+    .score-banner {
+      background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .score-stats {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.14);
+      padding: 0.85rem 1.1rem;
+      border-radius: var(--radius-md);
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.74rem;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 0.2rem;
+    }
+
+    .publish-banner {
+      background: var(--primary-soft);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .secret-lock-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      opacity: 0.6;
+      transition: var(--transition);
+    }
+
+    .secret-lock-btn:hover {
+      opacity: 1;
+      color: var(--primary);
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.2rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: var(--transition);
+      z-index: 100;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <div class="brand" onclick="openCategoriesRoot()" ondblclick="promptAdminUnlock()" title="Double-click logo or click footer lock for Admin Mode">
+        <div class="brand-badge">Q</div>
+        <span>QuizMaster Studio</span>
+        <span class="admin-status-pill admin-only">Admin Unlocked</span>
+      </div>
+      <div class="nav-links">
+        <span class="scheme-pill" title="Standard Exam Marking Scheme">
+          <span>Marking:</span>
+          <span class="scheme-pos">+1.00 Correct</span>
+          <span>•</span>
+          <span class="scheme-neg">-0.25 Wrong</span>
+        </span>
+        <button id="nav-dashboard" class="nav-btn active" onclick="openCategoriesRoot()">Subjects & Chapters</button>
+        <button id="nav-creator" class="nav-btn admin-only" onclick="switchView('creator')">Test Creator (Admin)</button>
+        <button class="btn btn-danger btn-sm admin-only" onclick="lockAdminMode()">Lock Admin</button>
+        <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" title="Switch Light/Dark Theme">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-label">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- VIEW 1: DASHBOARD (SUBJECT CATEGORIES -> CHAPTER TESTS) -->
+    <section id="view-dashboard" class="view-section active">
+      <div class="section-header">
+        <div>
+          <h1 id="dashboard-heading">Subject Categories</h1>
+          <p id="dashboard-subtitle" class="subtitle">Select a subject folder below to view its chapter-wise tests.</p>
+        </div>
+        <div class="admin-only" style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-success" onclick="exportQuestionsJSONForHosting()">⬇ Download questions.json</button>
+          <label class="btn btn-secondary" style="margin: 0; cursor: pointer;">
+            Import JSON
+            <input type="file" id="import-input" accept=".json" style="display: none;" onchange="importTestsJSON(event)" />
+          </label>
+          <button class="btn btn-primary" onclick="openCreatorForNewTest()">+ Create New Chapter Test</button>
+        </div>
+      </div>
+
+      <!-- Breadcrumb bar (Visible when inside a specific Subject Category) -->
+      <div id="category-breadcrumb" class="breadcrumb-bar" style="display: none;">
+        <div class="breadcrumb-trail">
+          <span class="breadcrumb-link" onclick="openCategoriesRoot()">📁 All Subjects</span>
+          <span style="color: var(--text-muted);">/</span>
+          <span id="current-category-label">Category Name</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-primary btn-sm admin-only" onclick="createChapterInCurrentCategory()">+ Add Chapter to This Subject</button>
+          <button class="btn btn-secondary btn-sm" onclick="openCategoriesRoot()">← Back to All Subjects</button>
+        </div>
+      </div>
+
+      <!-- Full Subject Combined Mock Banner (Visible inside a Subject Category) -->
+      <div id="combined-subject-banner" class="combined-mock-banner" style="display: none;"></div>
+
+      <div id="tests-grid" class="tests-grid"></div>
+    </section>
+
+    <!-- VIEW 2: TEST CREATOR (ADMIN MODULE) -->
+    <section id="view-creator" class="view-section">
+      <div class="publish-banner">
+        <div>
+          <h2 style="margin-bottom: 0.2rem; color: var(--primary);">🚀 Ready to publish your changes for all visitors?</h2>
+          <p class="subtitle" style="font-size: 0.88rem;">
+            1. Organize your Subject Categories and Chapter Tests below.<br/>
+            2. Click <strong>"Download questions.json"</strong> and upload it alongside <code>index.html</code> on your host.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-success" onclick="exportQuestionsJSONForHosting()">⬇ Download questions.json</button>
+          <button class="btn btn-secondary" onclick="syncFromHostedJSON()">↻ Reload Hosted questions.json</button>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div>
+          <h1>Test Creator & Chapter Manager</h1>
+          <p class="subtitle">Assign any test to a Subject Category (e.g., "Management") and give it a Chapter Title.</p>
+        </div>
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="openPinGeneratorModal()">🔑 Generate New PIN Hash</button>
+          <button class="btn btn-secondary" onclick="resetDefaultSampleData()">Restore Sample Tests</button>
+        </div>
+      </div>
+
+      <!-- Test & Category Selector Bar -->
+      <div class="card">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; align-items: end;">
+          <div>
+            <label for="admin-test-select">Select Chapter Test to Edit</label>
+            <select id="admin-test-select" onchange="handleTestSelectChange()"></select>
+          </div>
+          <div>
+            <label for="admin-test-category">Subject Category (Folder) *</label>
+            <input type="text" id="admin-test-category" list="existing-categories-list" placeholder="e.g., Management" oninput="updateCurrentTestMeta()" />
+            <datalist id="existing-categories-list"></datalist>
+          </div>
+          <div>
+            <label for="admin-test-title">Chapter / Test Title *</label>
+            <input type="text" id="admin-test-title" placeholder="e.g., Chapter 1: Principles of Management" oninput="updateCurrentTestMeta()" />
+          </div>
+          <div>
+            <label for="admin-test-desc">Chapter Subtitle / Notes</label>
+            <input type="text" id="admin-test-desc" placeholder="e.g., Fayol's 14 Principles & Scalar Chain" oninput="updateCurrentTestMeta()" />
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--border); justify-content: flex-end; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="createNewTestPrompt()">+ New Blank Chapter Test</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteActiveTest()">Delete This Chapter Test</button>
+        </div>
+      </div>
+
+      <div class="admin-layout">
+        <div class="card">
+          <h2 id="form-heading">Add New Question</h2>
+          <p class="subtitle" style="margin-bottom: 1.25rem;">All changes save automatically to your browser's local draft storage.</p>
+
+          <form id="question-form" onsubmit="saveQuestion(event)">
+            <input type="hidden" id="edit-question-id" value="" />
+
+            <div class="form-group">
+              <label for="q-text-input">Question Text *</label>
+              <textarea id="q-text-input" required placeholder="Enter the multiple-choice question stem here..."></textarea>
+            </div>
+
+            <div class="options-grid">
+              <div class="form-group">
+                <label for="opt-a">Option A *</label>
+                <input type="text" id="opt-a" required placeholder="First choice" />
+              </div>
+              <div class="form-group">
+                <label for="opt-b">Option B *</label>
+                <input type="text" id="opt-b" required placeholder="Second choice" />
+              </div>
+              <div class="form-group">
+                <label for="opt-c">Option C *</label>
+                <input type="text" id="opt-c" required placeholder="Third choice" />
+              </div>
+              <div class="form-group">
+                <label for="opt-d">Option D *</label>
+                <input type="text" id="opt-d" required placeholder="Fourth choice" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="correct-option">Correct Answer *</label>
+              <select id="correct-option" required>
+                <option value="0">Option A</option>
+                <option value="1">Option B</option>
+                <option value="2">Option C</option>
+                <option value="3">Option D</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="q-summary-input">Topic Summary / Extra Notes *</label>
+              <textarea id="q-summary-input" required placeholder="Provide detailed explanation, related facts, key formulas, or context to review after answering..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="submit" id="save-q-btn" class="btn btn-primary">Add Question to Chapter</button>
+              <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display: none;" onclick="resetQuestionForm()">Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="margin: 0;">Questions in This Chapter</h2>
+            <span id="admin-q-count" class="badge" style="margin: 0;">0 Questions</span>
+          </div>
+          <div id="admin-questions-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: EXAM ATTEMPT VIEW -->
+    <section id="view-attempt" class="view-section">
+      <div class="exam-topbar">
+        <div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.35rem;">
+            <span id="attempt-category-badge" class="badge badge-muted" style="margin: 0;">Category</span>
+            <span id="attempt-mode-badge" class="badge" style="margin: 0;">Mode</span>
+            <span class="scheme-pill" style="padding: 0.15rem 0.6rem; font-size: 0.75rem;">
+              <span class="scheme-pos">+1.00</span> / <span class="scheme-neg">-0.25</span>
+            </span>
+          </div>
+          <h2 id="attempt-test-title" style="margin: 0;">Test Title</h2>
+        </div>
+        <div style="display: flex; gap: 0.6rem; align-items: center;">
+          <span id="live-score-pill" class="scheme-pill" style="display: none;">Net Marks: 0.00</span>
+          <button class="btn btn-secondary" onclick="restartCurrentAttempt()">Reset Attempt</button>
+          <button class="btn btn-secondary" onclick="switchView('dashboard')">← Back to Chapters</button>
+        </div>
+      </div>
+
+      <div id="score-result-container" style="display: none;"></div>
+
+      <div id="mode-all-container" style="display: none;">
+        <div id="all-questions-list"></div>
+        <div class="card" id="all-submit-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span id="all-answered-status" style="font-weight: 700;">0 of 0 questions answered</span>
+            <div class="subtitle" style="font-size: 0.82rem;">Marking Scheme: +1.00 for Correct, -0.25 for Incorrect, 0 for Skipped</div>
+          </div>
+          <button class="btn btn-primary" onclick="submitAllAtOnceMode()">Submit Test & Calculate Marks</button>
+        </div>
+      </div>
+
+      <div id="mode-one-container" style="display: none;">
+        <div class="progress-bar-wrap">
+          <div id="one-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div id="one-palette" class="palette-row"></div>
+        <div id="single-question-stage"></div>
+
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <button id="prev-q-btn" class="btn btn-secondary" onclick="navigateOneByOne(-1)">← Previous</button>
+          <span id="one-progress-label" style="font-weight: 700; color: var(--text-muted);">Question 1 of 1</span>
+          <div style="display: flex; gap: 0.6rem;">
+            <button id="next-q-btn" class="btn btn-primary" onclick="navigateOneByOne(1)">Next →</button>
+            <button id="finish-one-btn" class="btn btn-primary" style="display: none; background: var(--success);" onclick="finishOneByOneMode()">Finish Test & View Marks</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>QuizMaster Studio — Subject & Chapter Exam Portal (+1 / -0.25 Marking)</span>
+    <button class="secret-lock-btn" onclick="promptAdminUnlock()" title="Admin Access">🔒</button>
+  </footer>
+
+  <div id="toast">Saved!</div>
+
+  <script>
+    const STORAGE_KEY = 'quizmaster_tests_v1';
+    const THEME_KEY = 'quizmaster_theme_v1';
+    const ADMIN_SESSION_KEY = 'quizmaster_admin_unlocked';
+    const LETTERS = ['A', 'B', 'C', 'D'];
+
+    // Marking Scheme Constants (+1 for Correct, -0.25 for Incorrect)
+    const MARKS_CORRECT = 1.0;
+    const MARKS_WRONG = -0.25;
+
+    // SHA-256 Hash for 'Rewa@123'
+    const ADMIN_PIN_HASH = "52912653ba1b1b5f9916d37030c85d017c5cd6327c26b1ab2ae36819c8f223b3";
+
+    // Pre-loaded sample data demonstrating Subject Categories -> Multiple Chapters
+    const DEFAULT_TESTS = [
+      {
+        id: 'test-mgmt-ch1',
+        category: 'Management',
+        title: 'Chapter 1: Principles of Administrative Management',
+        description: 'Henri Fayol\'s 14 Principles, Scalar Chain, and Unity of Command.',
+        questions: [
+          {
+            id: 'q-m101',
+            text: 'In Henri Fayol\'s principles of management, which concept allows two subordinates at the same level in different departments to communicate directly with each other during emergencies instead of following the strict line of authority?',
+            options: [
+              'Esprit de Corps',
+              'Gang Plank (in Scalar Chain)',
+              'Unity of Direction',
+              'Subordination of Individual Interest'
+            ],
+            correctIndex: 1,
+            summary: '• Correct Answer: Gang Plank (Option B)\n• Scalar Chain: Refers to the formal line of authority and communication running from the highest executive to the lowest subordinate.\n• Gang Plank Exception: To prevent delays in urgent situations, Fayol introduced the "Gang Plank" (bridge), permitting horizontal communication between employees at the same hierarchical level provided their immediate superiors are informed.'
+          },
+          {
+            id: 'q-m102',
+            text: 'Which principle of management states that an employee should receive orders from one and only one superior to avoid confusion and conflict of authority?',
+            options: [
+              'Unity of Command',
+              'Unity of Direction',
+              'Centralization',
+              'Order'
+            ],
+            correctIndex: 0,
+            summary: '• Correct Answer: Unity of Command (Option A)\n• Key Distinction: Unity of Command focuses on individual employees ("one subordinate, one boss"), whereas Unity of Direction focuses on organizational activities ("one head and one plan" for a group of activities having the same objective).'
+          }
+        ]
+      },
+      {
+        id: 'test-mgmt-ch2',
+        category: 'Management',
+        title: 'Chapter 2: Core Functions & Span of Control',
+        description: 'Planning, Organizing, Staffing, Directing, and Controlling (POSDCORB).',
+        questions: [
+          {
+            id: 'q-m201',
+            text: 'What happens to the organizational structure when a company adopts a "Wide Span of Management" (Span of Control)?',
+            options: [
+              'The organization becomes taller with more hierarchical levels',
+              'The organization becomes flatter with fewer hierarchical levels',
+              'Supervisors oversee fewer subordinates directly',
+              'Communication channels become longer and slower'
+            ],
+            correctIndex: 1,
+            summary: '• Correct Answer: Flatter structure with fewer levels (Option B)\n• Span of Control: Refers to the number of subordinates that a manager or supervisor can directly and effectively manage.\n• Wide vs. Narrow: A wide span results in fewer management layers (flat structure), while a narrow span creates multiple hierarchical tiers (tall structure).'
+          }
+        ]
+      },
+      {
+        id: 'test-sample-1',
+        category: 'General Science & CS',
+        title: 'Chapter 1: Cell Biology & Data Structures',
+        description: 'High-yield fundamentals across cellular organelles, algorithms, and atmospheric layers.',
+        questions: [
+          {
+            id: 'q-101',
+            text: 'Which cellular organelle is uniquely responsible for generating most of the cell\'s supply of adenosine triphosphate (ATP) through oxidative phosphorylation?',
+            options: [
+              'Golgi Apparatus',
+              'Mitochondrion',
+              'Endoplasmic Reticulum',
+              'Lysosome'
+            ],
+            correctIndex: 1,
+            summary: '• Correct Answer: Mitochondrion (Option B)\n• Core Concept: Mitochondria are double-membrane-bound organelles present in most eukaryotic organisms.\n• Key Mechanism: Oxidative phosphorylation occurs across the inner mitochondrial membrane (cristae), where the electron transport chain creates a proton gradient that drives ATP synthase.'
+          },
+          {
+            id: 'q-102',
+            text: 'In computer science, what is the worst-case time complexity of searching for an element in a balanced Binary Search Tree (BST) with n nodes?',
+            options: [
+              'O(1)',
+              'O(log n)',
+              'O(n)',
+              'O(n log n)'
+            ],
+            correctIndex: 1,
+            summary: '• Correct Answer: O(log n) (Option B)\n• Why: In a height-balanced BST (such as an AVL tree or Red-Black tree), each comparison halves the remaining search space because the tree height is strictly maintained at logarithmic scale.'
+          }
+        ]
+      }
+    ];
+
+    let tests = [];
+    let activeAdminTestId = null;
+    let selectedDashboardCategory = null;
+
+    // Active Attempt State (supports both single chapter tests & combined subject mocks)
+    let currentAttempt = {
+      activeTestObj: null, // Holds the test or dynamically generated combined mock
+      mode: null,
+      userAnswers: {},
+      submitted: false,
+      currentIndex: 0,
+      isCombinedMock: false,
+      shuffleEnabled: false
+    };
+
+    // ==================== SECURITY & ADMIN ACCESS ====================
+    function isAdminUnlocked() {
+      return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+    }
+
+    function applyAdminUIState() {
+      if (isAdminUnlocked()) {
+        document.body.classList.add('is-admin');
+      } else {
+        document.body.classList.remove('is-admin');
+        if (document.getElementById('view-creator').classList.contains('active')) {
+          switchView('dashboard');
+        }
+      }
+    }
+
+    function sha256PureJS(str) {
+      const utf8 = new TextEncoder().encode(str);
+      const K = [
+        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+      ];
+      let H = [
+        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+        0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+      ];
+
+      const bitLen = utf8.length * 8;
+      const padLen = ((utf8.length + 8) >> 6 << 4) + 16;
+      const blocks = new Int32Array(padLen);
+
+      for (let i = 0; i < utf8.length; i++) {
+        blocks[i >> 2] |= utf8[i] << (24 - (i & 3) * 8);
+      }
+      blocks[utf8.length >> 2] |= 0x80 << (24 - (utf8.length & 3) * 8);
+      blocks[padLen - 2] = Math.floor(bitLen / 0x100000000);
+      blocks[padLen - 1] = bitLen & 0xffffffff;
+
+      const W = new Int32Array(64);
+      const rotr = (n, x) => (x >>> n) | (x << (32 - n));
+
+      for (let i = 0; i < padLen; i += 16) {
+        let [a, b, c, d, e, f, g, h] = H;
+        for (let t = 0; t < 64; t++) {
+          if (t < 16) {
+            W[t] = blocks[i + t];
+          } else {
+            const s0 = rotr(7, W[t - 15]) ^ rotr(18, W[t - 15]) ^ (W[t - 15] >>> 3);
+            const s1 = rotr(17, W[t - 2]) ^ rotr(19, W[t - 2]) ^ (W[t - 2] >>> 10);
+            W[t] = (W[t - 16] + s0 + W[t - 7] + s1) | 0;
+          }
+          const S1 = rotr(6, e) ^ rotr(11, e) ^ rotr(25, e);
+          const ch = (e & f) ^ (~e & g);
+          const temp1 = (h + S1 + ch + K[t] + W[t]) | 0;
+          const S0 = rotr(2, a) ^ rotr(13, a) ^ rotr(22, a);
+          const maj = (a & b) ^ (a & c) ^ (b & c);
+          const temp2 = (S0 + maj) | 0;
+
+          h = g;
+          g = f;
+          f = e;
+          e = (d + temp1) | 0;
+          d = c;
+          c = b;
+          b = a;
+          a = (temp1 + temp2) | 0;
+        }
+        H[0] = (H[0] + a) | 0;
+        H[1] = (H[1] + b) | 0;
+        H[2] = (H[2] + c) | 0;
+        H[3] = (H[3] + d) | 0;
+        H[4] = (H[4] + e) | 0;
+        H[5] = (H[5] + f) | 0;
+        H[6] = (H[6] + g) | 0;
+        H[7] = (H[7] + h) | 0;
+      }
+
+      return H.map(v => (v >>> 0).toString(16).padStart(8, '0')).join('');
+    }
+
+    async function sha256(text) {
+      return sha256PureJS(text);
+    }
+
+    async function promptAdminUnlock() {
+      if (isAdminUnlocked()) {
+        lockAdminMode();
+        return;
+      }
+
+      const pin = prompt('🔒 Enter Admin Password to unlock Test Creator:');
+      if (!pin) return;
+
+      const hashed = await sha256(pin.trim());
+      if (hashed === ADMIN_PIN_HASH) {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
+        applyAdminUIState();
+        renderDashboard();
+        showToast('🔓 Admin Mode Unlocked!');
+      } else {
+        alert('Incorrect Admin Password.');
+      }
+    }
+
+    function lockAdminMode() {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      applyAdminUIState();
+      renderDashboard();
+      showToast('🔒 Returned to Visitor View.');
+    }
+
+    async function openPinGeneratorModal() {
+      const newPin = prompt('Enter the new secret password you want to use:');
+      if (!newPin) return;
+      const hash = await sha256(newPin.trim());
+      prompt(
+        'Copy this SHA-256 hash and replace ADMIN_PIN_HASH inside index.html:',
+        hash
+      );
+    }
+
+    // ==================== THEME LOGIC ====================
+    function initTheme() {
+      const savedTheme = localStorage.getItem(THEME_KEY);
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        applyTheme('dark');
+      } else {
+        applyTheme('light');
+      }
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // ==================== INITIALIZATION & DATA LOADING ====================
+    function normalizeTestsCategories(list) {
+      return list.map(t => ({
+        ...t,
+        category: (t.category && t.category.trim()) ? t.category.trim() : 'General'
+      }));
+    }
+
+    async function initApp() {
+      initTheme();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('admin') === '1' && !isAdminUnlocked()) {
+        await promptAdminUnlock();
+      }
+      applyAdminUIState();
+
+      const localDraft = localStorage.getItem(STORAGE_KEY);
+
+      let hostedData = null;
+      try {
+        const res = await fetch('./questions.json?v=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          const parsed = await res.json();
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            hostedData = normalizeTestsCategories(parsed);
+          }
+        }
+      } catch (err) {
+        // Running locally via file:// or questions.json not uploaded yet
+      }
+
+      if (!isAdminUnlocked() && hostedData) {
+        tests = hostedData;
+      } else if (localDraft) {
+        try {
+          tests = normalizeTestsCategories(JSON.parse(localDraft));
+        } catch (e) {
+          tests = hostedData || normalizeTestsCategories(JSON.parse(JSON.stringify(DEFAULT_TESTS)));
+        }
+      } else if (hostedData) {
+        tests = hostedData;
+        saveToStorage();
+      } else {
+        tests = normalizeTestsCategories(JSON.parse(JSON.stringify(DEFAULT_TESTS)));
+        saveToStorage();
+      }
+
+      if (tests.length > 0) {
+        activeAdminTestId = tests[0].id;
+      }
+
+      renderDashboard();
+      renderAdminView();
+    }
+
+    async function syncFromHostedJSON() {
+      if (!confirm('Overwrite your local browser drafts with the live hosted questions.json file?')) return;
+      try {
+        const res = await fetch('./questions.json?v=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error('File not found');
+        const parsed = await res.json();
+        if (Array.isArray(parsed)) {
+          tests = normalizeTestsCategories(parsed);
+          activeAdminTestId = tests[0]?.id || null;
+          saveToStorage();
+          renderDashboard();
+          renderAdminView();
+          showToast('Synced with hosted questions.json!');
+        }
+      } catch (e) {
+        alert('Could not fetch ./questions.json. Make sure questions.json is uploaded in the same folder as index.html.');
+      }
+    }
+
+    function saveToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tests));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatMarks(num) {
+      const rounded = Math.round(num * 100) / 100;
+      return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+    }
+
+    function openCategoriesRoot() {
+      selectedDashboardCategory = null;
+      switchView('dashboard');
+    }
+
+    function openCategoryFolder(categoryName) {
+      selectedDashboardCategory = categoryName;
+      renderDashboard();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchView(viewName) {
+      if (viewName === 'creator' && !isAdminUnlocked()) {
+        promptAdminUnlock();
+        return;
+      }
+
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      if (viewName === 'dashboard') {
+        document.getElementById('view-dashboard').classList.add('active');
+        document.getElementById('nav-dashboard').classList.add('active');
+        renderDashboard();
+      } else if (viewName === 'creator') {
+        document.getElementById('view-creator').classList.add('active');
+        document.getElementById('nav-creator').classList.add('active');
+        renderAdminView();
+      } else if (viewName === 'attempt') {
+        document.getElementById('view-attempt').classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==================== DASHBOARD MODULE (CATEGORIES -> CHAPTERS) ====================
+    function getUniqueCategories() {
+      const map = new Map();
+      tests.forEach(t => {
+        const cat = (t.category && t.category.trim()) ? t.category.trim() : 'General';
+        if (!map.has(cat)) {
+          map.set(cat, { name: cat, chapterCount: 0, questionCount: 0, sampleChapters: [] });
+        }
+        const entry = map.get(cat);
+        entry.chapterCount += 1;
+        entry.questionCount += t.questions.length;
+        if (entry.sampleChapters.length < 3) {
+          entry.sampleChapters.push(t.title);
+        }
+      });
+      return Array.from(map.values());
+    }
+
+    function renderDashboard() {
+      const grid = document.getElementById('tests-grid');
+      const heading = document.getElementById('dashboard-heading');
+      const subtitle = document.getElementById('dashboard-subtitle');
+      const breadcrumb = document.getElementById('category-breadcrumb');
+      const combinedBanner = document.getElementById('combined-subject-banner');
+
+      if (tests.length === 0) {
+        breadcrumb.style.display = 'none';
+        combinedBanner.style.display = 'none';
+        heading.textContent = 'Subject Categories';
+        subtitle.textContent = 'Select a subject folder below to view its chapter-wise tests.';
+        grid.innerHTML = `
+          <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+            <h2>No Tests Available Yet</h2>
+            <p class="subtitle" style="margin-bottom: 1.25rem;">Check back soon for new practice tests.</p>
+            <div class="admin-only">
+              <button class="btn btn-primary" onclick="openCreatorForNewTest()">+ Create First Chapter Test</button>
+              <button class="btn btn-secondary" onclick="resetDefaultSampleData()">Load Sample Tests</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const categories = getUniqueCategories();
+      if (selectedDashboardCategory && !categories.some(c => c.name === selectedDashboardCategory)) {
+        selectedDashboardCategory = null;
+      }
+
+      // LEVEL 1: SHOW SUBJECT CATEGORY FOLDERS
+      if (!selectedDashboardCategory) {
+        breadcrumb.style.display = 'none';
+        combinedBanner.style.display = 'none';
+        heading.textContent = 'Subject Categories';
+        subtitle.textContent = 'Click any subject folder below to open its chapter-wise practice tests or attempt a full subject mock.';
+
+        grid.innerHTML = categories.map(cat => {
+          const safeCatParam = escapeHTML(cat.name).replace(/'/g, "\\'");
+          const previewList = cat.sampleChapters.map(ch => `• ${escapeHTML(ch)}`).join('<br/>');
+          return `
+            <div class="category-card" onclick="openCategoryFolder('${safeCatParam}')">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div class="folder-icon">📁</div>
+                  <span class="badge">${cat.chapterCount} ${cat.chapterCount === 1 ? 'Chapter' : 'Chapters'}</span>
+                </div>
+                <h2>${escapeHTML(cat.name)}</h2>
+                <p class="subtitle" style="font-size: 0.86rem; margin-top: 0.4rem; line-height: 1.5;">
+                  ${previewList}
+                  ${cat.chapterCount > 3 ? `<br/><span style="color: var(--primary); font-weight: 600;">+ ${cat.chapterCount - 3} more chapters...</span>` : ''}
+                </p>
+              </div>
+              <div class="category-meta-row">
+                <span>${cat.questionCount} Total Questions (${cat.questionCount} Marks)</span>
+                <span style="color: var(--primary);">Open Folder →</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
+      // LEVEL 2: SHOW CHAPTER TESTS + FULL SUBJECT COMBINED MOCK BANNER
+      breadcrumb.style.display = 'flex';
+      document.getElementById('current-category-label').textContent = selectedDashboardCategory;
+      heading.textContent = `${selectedDashboardCategory} — Chapters`;
+      subtitle.textContent = `Attempt individual chapters below or launch a combined mock across all ${selectedDashboardCategory} chapters.`;
+
+      const chapterTests = tests.filter(
+        t => ((t.category && t.category.trim()) ? t.category.trim() : 'General') === selectedDashboardCategory
+      );
+
+      const totalSubjectQuestions = chapterTests.reduce((acc, t) => acc + t.questions.length, 0);
+      const safeCatParam = escapeHTML(selectedDashboardCategory).replace(/'/g, "\\'");
+
+      if (totalSubjectQuestions > 0) {
+        combinedBanner.style.display = 'flex';
+        combinedBanner.innerHTML = `
+          <div>
+            <span class="badge" style="margin-bottom: 0.35rem;">🏆 Full Subject Combined Mock</span>
+            <h2 style="margin-bottom: 0.2rem;">All ${escapeHTML(selectedDashboardCategory)} Chapters Combined</h2>
+            <p class="subtitle" style="font-size: 0.88rem;">
+              Pools <strong>${totalSubjectQuestions} questions</strong> from all <strong>${chapterTests.length} chapters</strong> (${totalSubjectQuestions} Max Marks • +1.00 / -0.25).
+            </p>
+          </div>
+          <div class="combined-mock-actions">
+            <label class="shuffle-label">
+              <input type="checkbox" id="shuffle-combined-chk" checked />
+              Shuffle Questions
+            </label>
+            <button class="btn btn-primary" onclick="startCombinedSubjectMock('${safeCatParam}', 'all')">
+              📄 Full Paper Mode
+            </button>
+            <button class="btn btn-secondary" onclick="startCombinedSubjectMock('${safeCatParam}', 'one')">
+              ⚡ One-by-One Mode
+            </button>
+          </div>
+        `;
+      } else {
+        combinedBanner.style.display = 'none';
+      }
+
+      grid.innerHTML = chapterTests.map((test, idx) => `
+        <div class="test-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+              <span class="badge">Chapter ${idx + 1} • ${test.questions.length} ${test.questions.length === 1 ? 'Q' : 'Qs'} (${test.questions.length} Marks)</span>
+              <button class="btn btn-secondary btn-sm admin-only" onclick="editTestFromDashboard('${test.id}')">Edit / Add Qs</button>
+            </div>
+            <h2>${escapeHTML(test.title)}</h2>
+            <p class="subtitle">${escapeHTML(test.description || 'Chapter practice test.')}</p>
+          </div>
+
+          <div class="mode-actions">
+            <button class="mode-btn" onclick="startTest('${test.id}', 'all')">
+              <span>📄 Mode 1: All-at-Once</span>
+              <span class="mode-tag">Full Paper View →</span>
+            </button>
+            <button class="mode-btn" onclick="startTest('${test.id}', 'one')">
+              <span>⚡ Mode 2: One-by-One</span>
+              <span class="mode-tag">Instant Study View →</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openCreatorForNewTest() {
+      if (!isAdminUnlocked()) return;
+      createNewTestPrompt(selectedDashboardCategory || 'General');
+      switchView('creator');
+    }
+
+    function createChapterInCurrentCategory() {
+      if (!isAdminUnlocked()) return;
+      createNewTestPrompt(selectedDashboardCategory || 'General');
+      switchView('creator');
+    }
+
+    function editTestFromDashboard(testId) {
+      if (!isAdminUnlocked()) return;
+      activeAdminTestId = testId;
+      switchView('creator');
+    }
+
+    // ==================== CREATOR (ADMIN) MODULE ====================
+    function getActiveAdminTest() {
+      return tests.find(t => t.id === activeAdminTestId) || tests[0] || null;
+    }
+
+    function renderAdminView() {
+      const select = document.getElementById('admin-test-select');
+      const categoryInput = document.getElementById('admin-test-category');
+      const datalist = document.getElementById('existing-categories-list');
+      const titleInput = document.getElementById('admin-test-title');
+      const descInput = document.getElementById('admin-test-desc');
+      const qList = document.getElementById('admin-questions-list');
+      const qCount = document.getElementById('admin-q-count');
+
+      if (tests.length === 0) {
+        const defaultNew = {
+          id: 'test-' + Date.now(),
+          category: 'General',
+          title: 'Chapter 1: Introduction',
+          description: 'Created in QuizMaster Studio',
+          questions: []
+        };
+        tests.push(defaultNew);
+        activeAdminTestId = defaultNew.id;
+        saveToStorage();
+      }
+
+      const currentTest = getActiveAdminTest();
+      activeAdminTestId = currentTest.id;
+
+      const categories = getUniqueCategories();
+      datalist.innerHTML = categories.map(c => `<option value="${escapeHTML(c.name)}"></option>`).join('');
+
+      select.innerHTML = tests.map(t => `
+        <option value="${t.id}" ${t.id === activeAdminTestId ? 'selected' : ''}>
+          [${escapeHTML(t.category || 'General')}] ${escapeHTML(t.title)} (${t.questions.length} Qs)
+        </option>
+      `).join('');
+
+      categoryInput.value = currentTest.category || 'General';
+      titleInput.value = currentTest.title;
+      descInput.value = currentTest.description || '';
+      qCount.textContent = `${currentTest.questions.length} ${currentTest.questions.length === 1 ? 'Question' : 'Questions'}`;
+
+      if (currentTest.questions.length === 0) {
+        qList.innerHTML = `<p class="subtitle" style="text-align: center; padding: 2rem 0;">No questions in this chapter yet. Use the form on the left to add your first question.</p>`;
+      } else {
+        qList.innerHTML = currentTest.questions.map((q, idx) => `
+          <div class="question-list-item">
+            <div class="q-item-header">
+              <div class="q-item-title">Q${idx + 1}. ${escapeHTML(q.text)}</div>
+              <div style="display: flex; gap: 0.4rem; flex-shrink: 0;">
+                <button class="btn btn-secondary btn-sm" onclick="loadQuestionIntoForm('${q.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')">Delete</button>
+              </div>
+            </div>
+            <div class="q-item-meta">
+              <strong>Correct:</strong> Option ${LETTERS[q.correctIndex]} (${escapeHTML(q.options[q.correctIndex])})
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function handleTestSelectChange() {
+      activeAdminTestId = document.getElementById('admin-test-select').value;
+      resetQuestionForm();
+      renderAdminView();
+    }
+
+    function updateCurrentTestMeta() {
+      if (!isAdminUnlocked()) return;
+      const currentTest = getActiveAdminTest();
+      if (!currentTest) return;
+
+      currentTest.category = document.getElementById('admin-test-category').value.trim() || 'General';
+      currentTest.title = document.getElementById('admin-test-title').value.trim() || 'Untitled Chapter';
+      currentTest.description = document.getElementById('admin-test-desc').value.trim();
+      saveToStorage();
+
+      const select = document.getElementById('admin-test-select');
+      const opt = select.querySelector(`option[value="${currentTest.id}"]`);
+      if (opt) {
+        opt.textContent = `[${currentTest.category}] ${currentTest.title} (${currentTest.questions.length} Qs)`;
+      }
+    }
+
+    function createNewTestPrompt(defaultCategory) {
+      if (!isAdminUnlocked()) return;
+      const currentTest = getActiveAdminTest();
+      const targetCategory = defaultCategory || (currentTest ? currentTest.category : 'Management');
+      const existingInCat = tests.filter(t => t.category === targetCategory).length;
+
+      const newTest = {
+        id: 'test-' + Date.now(),
+        category: targetCategory,
+        title: `Chapter ${existingInCat + 1}: New Topic`,
+        description: 'Chapter-wise practice questions',
+        questions: []
+      };
+      tests.push(newTest);
+      activeAdminTestId = newTest.id;
+      saveToStorage();
+      resetQuestionForm();
+      renderAdminView();
+      showToast(`Added new chapter in "${targetCategory}"!`);
+    }
+
+    function deleteActiveTest() {
+      if (!isAdminUnlocked()) return;
+      if (tests.length <= 1) {
+        alert('You must keep at least one test in the studio. You can delete individual questions instead.');
+        return;
+      }
+      const currentTest = getActiveAdminTest();
+      if (!confirm(`Delete "${currentTest.title}" (${currentTest.category}) and all ${currentTest.questions.length} questions inside it?`)) return;
+
+      tests = tests.filter(t => t.id !== currentTest.id);
+      activeAdminTestId = tests[0].id;
+      saveToStorage();
+      renderAdminView();
+      showToast('Chapter test deleted.');
+    }
+
+    function saveQuestion(event) {
+      event.preventDefault();
+      if (!isAdminUnlocked()) return;
+      const currentTest = getActiveAdminTest();
+      if (!currentTest) return;
+
+      const editId = document.getElementById('edit-question-id').value;
+      const questionData = {
+        id: editId || 'q-' + Date.now(),
+        text: document.getElementById('q-text-input').value.trim(),
+        options: [
+          document.getElementById('opt-a').value.trim(),
+          document.getElementById('opt-b').value.trim(),
+          document.getElementById('opt-c').value.trim(),
+          document.getElementById('opt-d').value.trim()
+        ],
+        correctIndex: parseInt(document.getElementById('correct-option').value, 10),
+        summary: document.getElementById('q-summary-input').value.trim()
+      };
+
+      if (editId) {
+        const idx = currentTest.questions.findIndex(q => q.id === editId);
+        if (idx !== -1) currentTest.questions[idx] = questionData;
+        showToast('Question updated!');
+      } else {
+        currentTest.questions.push(questionData);
+        showToast('Question added to chapter!');
+      }
+
+      saveToStorage();
+      resetQuestionForm();
+      renderAdminView();
+    }
+
+    function loadQuestionIntoForm(questionId) {
+      if (!isAdminUnlocked()) return;
+      const currentTest = getActiveAdminTest();
+      const q = currentTest.questions.find(item => item.id === questionId);
+      if (!q) return;
+
+      document.getElementById('edit-question-id').value = q.id;
+      document.getElementById('q-text-input').value = q.text;
+      document.getElementById('opt-a').value = q.options[0];
+      document.getElementById('opt-b').value = q.options[1];
+      document.getElementById('opt-c').value = q.options[2];
+      document.getElementById('opt-d').value = q.options[3];
+      document.getElementById('correct-option').value = q.correctIndex;
+      document.getElementById('q-summary-input').value = q.summary;
+
+      document.getElementById('form-heading').textContent = 'Edit Question';
+      document.getElementById('save-q-btn').textContent = 'Update Question';
+      document.getElementById('cancel-edit-btn').style.display = 'inline-flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetQuestionForm() {
+      document.getElementById('question-form').reset();
+      document.getElementById('edit-question-id').value = '';
+      document.getElementById('form-heading').textContent = 'Add New Question';
+      document.getElementById('save-q-btn').textContent = 'Add Question to Chapter';
+      document.getElementById('cancel-edit-btn').style.display = 'none';
+    }
+
+    function deleteQuestion(questionId) {
+      if (!isAdminUnlocked()) return;
+      const currentTest = getActiveAdminTest();
+      currentTest.questions = currentTest.questions.filter(q => q.id !== questionId);
+      saveToStorage();
+      if (document.getElementById('edit-question-id').value === questionId) {
+        resetQuestionForm();
+      }
+      renderAdminView();
+      showToast('Question removed.');
+    }
+
+    // ==================== PUBLISH & JSON IMPORT/EXPORT ====================
+    function exportQuestionsJSONForHosting() {
+      if (!isAdminUnlocked()) return;
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tests, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "questions.json");
+      document.body.appendChild(dlAnchor);
+      dlAnchor.click();
+      dlAnchor.remove();
+      showToast('Downloaded questions.json! Upload it to your host.');
+    }
+
+    function importTestsJSON(event) {
+      if (!isAdminUnlocked()) return;
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!Array.isArray(imported)) throw new Error('Invalid JSON structure');
+          tests = normalizeTestsCategories(imported);
+          activeAdminTestId = tests[0]?.id || null;
+          selectedDashboardCategory = null;
+          saveToStorage();
+          renderDashboard();
+          renderAdminView();
+          showToast('Successfully imported JSON!');
+        } catch (err) {
+          alert('Could not import file. Make sure it is a valid QuizMaster JSON file.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function resetDefaultSampleData() {
+      if (!isAdminUnlocked()) return;
+      if (!confirm('Restore default sample categories & chapters? Your custom tests with different IDs will remain intact.')) return;
+      DEFAULT_TESTS.forEach(sample => {
+        const copy = JSON.parse(JSON.stringify(sample));
+        const existingIdx = tests.findIndex(t => t.id === copy.id);
+        if (existingIdx !== -1) {
+          tests[existingIdx] = copy;
+        } else {
+          tests.push(copy);
+        }
+      });
+      activeAdminTestId = tests[0].id;
+      saveToStorage();
+      renderDashboard();
+      renderAdminView();
+      showToast('Sample categories & chapters restored!');
+    }
+
+    // ==================== ATTEMPT ENGINE (+1 / -0.25 MARKING & COMBINED MOCK) ====================
+    function calculateAttemptStats(testObj) {
+      const totalQuestions = testObj.questions.length;
+      const maxMarks = totalQuestions * MARKS_CORRECT;
+      let correct = 0;
+      let wrong = 0;
+      let attempted = 0;
+
+      testObj.questions.forEach(q => {
+        const choice = currentAttempt.userAnswers[q.id];
+        if (choice !== undefined) {
+          attempted++;
+          if (choice === q.correctIndex) {
+            correct++;
+          } else {
+            wrong++;
+          }
+        }
+      });
+
+      const positiveMarks = correct * MARKS_CORRECT;
+      const negativePenalty = wrong * Math.abs(MARKS_WRONG);
+      const netMarks = positiveMarks - negativePenalty;
+      const skipped = totalQuestions - attempted;
+      const percentage = maxMarks > 0 ? Math.max(0, Math.round((netMarks / maxMarks) * 100)) : 0;
+      const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+
+      return {
+        totalQuestions,
+        maxMarks,
+        correct,
+        wrong,
+        skipped,
+        attempted,
+        positiveMarks,
+        negativePenalty,
+        netMarks,
+        percentage,
+        accuracy
+      };
+    }
+
+    function updateLiveScorePill() {
+      const pill = document.getElementById('live-score-pill');
+      if (!currentAttempt.activeTestObj || currentAttempt.mode !== 'one') {
+        pill.style.display = 'none';
+        return;
+      }
+      pill.style.display = 'inline-flex';
+      const stats = calculateAttemptStats(currentAttempt.activeTestObj);
+      pill.innerHTML = `Net Marks: <strong>${formatMarks(stats.netMarks)} / ${formatMarks(stats.maxMarks)}</strong>`;
+    }
+
+    function startTest(testId, mode) {
+      const found = tests.find(t => t.id === testId);
+      if (!found || found.questions.length === 0) {
+        alert('This chapter has no questions yet!');
+        return;
+      }
+
+      selectedDashboardCategory = found.category || 'General';
+      const clonedTest = JSON.parse(JSON.stringify(found));
+
+      launchAttemptWithTestObject(clonedTest, mode, false, false);
+    }
+
+    function startCombinedSubjectMock(categoryName, mode, forceShuffleState) {
+      const chapterTests = tests.filter(
+        t => ((t.category && t.category.trim()) ? t.category.trim() : 'General') === categoryName
+      );
+
+      let combinedQuestions = [];
+      chapterTests.forEach(ch => {
+        ch.questions.forEach(q => {
+          combinedQuestions.push({
+            ...JSON.parse(JSON.stringify(q)),
+            id: `${ch.id}__${q.id}`,
+            sourceChapterTitle: ch.title
+          });
+        });
+      });
+
+      if (combinedQuestions.length === 0) {
+        alert(`No questions found inside ${categoryName}!`);
+        return;
+      }
+
+      const chk = document.getElementById('shuffle-combined-chk');
+      const shouldShuffle = forceShuffleState !== undefined ? forceShuffleState : (chk ? chk.checked : true);
+
+      if (shouldShuffle) {
+        for (let i = combinedQuestions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [combinedQuestions[i], combinedQuestions[j]] = [combinedQuestions[j], combinedQuestions[i]];
+        }
+      }
+
+      const combinedTestObj = {
+        id: 'combined-' + categoryName,
+        category: categoryName,
+        title: `${categoryName} — Full Subject Combined Mock (${chapterTests.length} Chapters)`,
+        description: `Combined test across all chapters in ${categoryName}`,
+        questions: combinedQuestions
+      };
+
+      selectedDashboardCategory = categoryName;
+      launchAttemptWithTestObject(combinedTestObj, mode, true, shouldShuffle);
+    }
+
+    function launchAttemptWithTestObject(testObj, mode, isCombinedMock, shuffleEnabled) {
+      currentAttempt = {
+        activeTestObj: testObj,
+        mode: mode,
+        userAnswers: {},
+        submitted: false,
+        currentIndex: 0,
+        isCombinedMock: isCombinedMock,
+        shuffleEnabled: shuffleEnabled
+      };
+
+      document.getElementById('attempt-category-badge').textContent = `📁 ${testObj.category || 'General'}`;
+      document.getElementById('attempt-test-title').textContent = testObj.title;
+      document.getElementById('attempt-mode-badge').textContent =
+        mode === 'all' ? 'Mode 1: All-at-Once (Full Paper)' : 'Mode 2: One-by-One (Interactive Study)';
+
+      document.getElementById('score-result-container').style.display = 'none';
+      document.getElementById('score-result-container').innerHTML = '';
+
+      updateLiveScorePill();
+
+      if (mode === 'all') {
+        document.getElementById('mode-all-container').style.display = 'block';
+        document.getElementById('mode-one-container').style.display = 'none';
+        renderAllAtOncePaper();
+      } else {
+        document.getElementById('mode-all-container').style.display = 'none';
+        document.getElementById('mode-one-container').style.display = 'block';
+        renderOneByOneStage();
+      }
+
+      switchView('attempt');
+    }
+
+    function restartCurrentAttempt() {
+      if (!currentAttempt.activeTestObj) return;
+      if (currentAttempt.isCombinedMock) {
+        startCombinedSubjectMock(
+          currentAttempt.activeTestObj.category,
+          currentAttempt.mode,
+          currentAttempt.shuffleEnabled
+        );
+      } else {
+        startTest(currentAttempt.activeTestObj.id, currentAttempt.mode);
+      }
+    }
+
+    function buildScoreBannerHTML(testObj) {
+      const s = calculateAttemptStats(testObj);
+
+      return `
+        <div class="score-banner">
+          <div>
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">Final Scorecard (+1.00 / -0.25 Scheme)</span>
+            <h1 style="margin-top: 0.2rem;">Net Marks: ${formatMarks(s.netMarks)} / ${formatMarks(s.maxMarks)}</h1>
+            <p style="opacity: 0.92; font-size: 0.92rem;">
+              Positive: <strong>+${formatMarks(s.positiveMarks)}</strong> &nbsp;|&nbsp;
+              Negative Penalty: <strong>-${formatMarks(s.negativePenalty)}</strong> &nbsp;|&nbsp;
+              Accuracy: <strong>${s.accuracy}%</strong>
+            </p>
+          </div>
+          <div class="score-stats">
+            <div class="stat-item">
+              <div class="stat-value">${formatMarks(s.netMarks)}</div>
+              <div class="stat-label">Net Marks</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${s.correct}</div>
+              <div class="stat-label">Correct (+${formatMarks(s.positiveMarks)})</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${s.wrong}</div>
+              <div class="stat-label">Wrong (-${formatMarks(s.negativePenalty)})</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${s.skipped}</div>
+              <div class="stat-label">Skipped (0)</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ---------------- MODE 1: ALL-AT-ONCE LOGIC ----------------
+    function renderAllAtOncePaper() {
+      const test = currentAttempt.activeTestObj;
+      const listEl = document.getElementById('all-questions-list');
+      const submitBar = document.getElementById('all-submit-bar');
+
+      listEl.innerHTML = test.questions.map((q, qIdx) => {
+        const userChoice = currentAttempt.userAnswers[q.id];
+        const isSubmitted = currentAttempt.submitted;
+
+        let markBadgeHTML = `<span class="q-mark-pill">+1.00 / -0.25</span>`;
+        if (isSubmitted) {
+          if (userChoice === undefined) {
+            markBadgeHTML = `<span class="q-mark-pill">0.00 Marks (Skipped)</span>`;
+          } else if (userChoice === q.correctIndex) {
+            markBadgeHTML = `<span class="q-mark-pill earned-pos">+1.00 Mark (Correct)</span>`;
+          } else {
+            markBadgeHTML = `<span class="q-mark-pill earned-neg">-0.25 Marks (Incorrect)</span>`;
+          }
+        }
+
+        const chapterOriginTag = q.sourceChapterTitle
+          ? `<div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.45rem; font-weight: 600;">📌 From: ${escapeHTML(q.sourceChapterTitle)}</div>`
+          : '';
+
+        const optionsHTML = q.options.map((optText, optIdx) => {
+          let stateClass = '';
+          if (!isSubmitted) {
+            if (userChoice === optIdx) stateClass = 'selected';
+          } else {
+            if (optIdx === q.correctIndex) {
+              stateClass = 'correct';
+            } else if (userChoice === optIdx && userChoice !== q.correctIndex) {
+              stateClass = 'incorrect';
+            }
+          }
+
+          return `
+            <button
+              type="button"
+              class="option-btn ${stateClass}"
+              ${isSubmitted ? 'disabled' : ''}
+              onclick="selectAllAtOnceOption('${q.id}', ${optIdx})"
+            >
+              <span class="option-letter">${LETTERS[optIdx]}</span>
+              <span>${escapeHTML(optText)}</span>
+            </button>
+          `;
+        }).join('');
+
+        const clearBtnHTML = (!isSubmitted && userChoice !== undefined)
+          ? `<div style="margin-top: 0.65rem; text-align: right;">
+               <button type="button" class="btn btn-secondary btn-sm" onclick="clearAllAtOnceOption('${q.id}')">Clear Selection (Avoid -0.25)</button>
+             </div>`
+          : '';
+
+        const summaryHTML = isSubmitted ? `
+          <div class="topic-summary-box">
+            <div class="summary-title">
+              📘 Topic Summary & Related Notes
+              ${userChoice === undefined ? '<span style="color: var(--text-muted); margin-left: auto;">(Unattempted • 0 Marks)</span>' : ''}
+            </div>
+            <div class="summary-content">${escapeHTML(q.summary)}</div>
+          </div>
+        ` : '';
+
+        return `
+          <div class="question-card" id="paper-q-${q.id}">
+            <div class="q-card-header-row">
+              <div class="q-number">Question ${qIdx + 1} of ${test.questions.length}</div>
+              ${markBadgeHTML}
+            </div>
+            ${chapterOriginTag}
+            <div class="q-text">${escapeHTML(q.text)}</div>
+            <div class="options-list">${optionsHTML}</div>
+            ${clearBtnHTML}
+            ${summaryHTML}
+          </div>
+        `;
+      }).join('');
+
+      const answeredCount = Object.keys(currentAttempt.userAnswers).length;
+      document.getElementById('all-answered-status').textContent =
+        `${answeredCount} of ${test.questions.length} questions answered`;
+      submitBar.style.display = currentAttempt.submitted ? 'none' : 'flex';
+    }
+
+    function selectAllAtOnceOption(questionId, optionIdx) {
+      if (currentAttempt.submitted) return;
+      // Clicking the already-selected option deselects it so users can skip to avoid negative marking
+      if (currentAttempt.userAnswers[questionId] === optionIdx) {
+        delete currentAttempt.userAnswers[questionId];
+      } else {
+        currentAttempt.userAnswers[questionId] = optionIdx;
+      }
+      renderAllAtOncePaper();
+    }
+
+    function clearAllAtOnceOption(questionId) {
+      if (currentAttempt.submitted) return;
+      delete currentAttempt.userAnswers[questionId];
+      renderAllAtOncePaper();
+    }
+
+    function submitAllAtOnceMode() {
+      const test = currentAttempt.activeTestObj;
+      const answeredCount = Object.keys(currentAttempt.userAnswers).length;
+      if (answeredCount < test.questions.length) {
+        const proceed = confirm(
+          `You have answered ${answeredCount} out of ${test.questions.length} questions (${test.questions.length - answeredCount} unattempted = 0 marks). Submit test now?`
+        );
+        if (!proceed) return;
+      }
+
+      currentAttempt.submitted = true;
+      const scoreContainer = document.getElementById('score-result-container');
+      scoreContainer.innerHTML = buildScoreBannerHTML(test);
+      scoreContainer.style.display = 'block';
+
+      renderAllAtOncePaper();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------------- MODE 2: ONE-BY-ONE LOGIC ----------------
+    function renderOneByOneStage() {
+      const test = currentAttempt.activeTestObj;
+      const total = test.questions.length;
+      const idx = currentAttempt.currentIndex;
+      const q = test.questions[idx];
+      const userChoice = currentAttempt.userAnswers[q.id];
+      const isLocked = userChoice !== undefined;
+
+      updateLiveScorePill();
+
+      const progressPercent = ((idx + 1) / total) * 100;
+      document.getElementById('one-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('one-progress-label').textContent = `Question ${idx + 1} of ${total}`;
+
+      const paletteEl = document.getElementById('one-palette');
+      paletteEl.innerHTML = test.questions.map((item, i) => {
+        const ans = currentAttempt.userAnswers[item.id];
+        let dotClass = '';
+        if (i === idx) dotClass += ' current';
+        if (ans !== undefined) {
+          dotClass += ans === item.correctIndex ? ' answered-correct' : ' answered-wrong';
+        }
+        return `<button class="palette-dot ${dotClass}" onclick="jumpToOneByOneQuestion(${i})">${i + 1}</button>`;
+      }).join('');
+
+      let markBadgeHTML = `<span class="q-mark-pill">+1.00 / -0.25</span>`;
+      if (isLocked) {
+        if (userChoice === q.correctIndex) {
+          markBadgeHTML = `<span class="q-mark-pill earned-pos">+1.00 Mark Earned</span>`;
+        } else {
+          markBadgeHTML = `<span class="q-mark-pill earned-neg">-0.25 Negative Mark</span>`;
+        }
+      }
+
+      const chapterOriginTag = q.sourceChapterTitle
+        ? `<div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.45rem; font-weight: 600;">📌 From: ${escapeHTML(q.sourceChapterTitle)}</div>`
+        : '';
+
+      const optionsHTML = q.options.map((optText, optIdx) => {
+        let stateClass = '';
+        if (isLocked) {
+          if (optIdx === q.correctIndex) {
+            stateClass = 'correct';
+          } else if (userChoice === optIdx && userChoice !== q.correctIndex) {
+            stateClass = 'incorrect';
+          }
+        }
+
+        return `
+          <button
+            type="button"
+            class="option-btn ${stateClass}"
+            ${isLocked ? 'disabled' : ''}
+            onclick="selectOneByOneOption('${q.id}', ${optIdx})"
+          >
+            <span class="option-letter">${LETTERS[optIdx]}</span>
+            <span>${escapeHTML(optText)}</span>
+          </button>
+        `;
+      }).join('');
+
+      const feedbackBanner = isLocked
+        ? (userChoice === q.correctIndex
+            ? `<div style="margin-top: 1rem; font-weight: 700; color: var(--success);">✓ Correct! (+1.00 Mark awarded)</div>`
+            : `<div style="margin-top: 1rem; font-weight: 700; color: var(--danger);">✕ Incorrect (-0.25 Mark penalty). The right answer is Option ${LETTERS[q.correctIndex]}.</div>`)
+        : '';
+
+      const summaryHTML = isLocked ? `
+        <div class="topic-summary-box">
+          <div class="summary-title">📘 Topic Summary & Related Notes</div>
+          <div class="summary-content">${escapeHTML(q.summary)}</div>
+        </div>
+      ` : '';
+
+      document.getElementById('single-question-stage').innerHTML = `
+        <div class="question-card">
+          <div class="q-card-header-row">
+            <div class="q-number">Question ${idx + 1} of ${total}</div>
+            ${markBadgeHTML}
+          </div>
+          ${chapterOriginTag}
+          <div class="q-text">${escapeHTML(q.text)}</div>
+          <div class="options-list">${optionsHTML}</div>
+          ${feedbackBanner}
+          ${summaryHTML}
+        </div>
+      `;
+
+      document.getElementById('prev-q-btn').disabled = idx === 0;
+      const nextBtn = document.getElementById('next-q-btn');
+      const finishBtn = document.getElementById('finish-one-btn');
+
+      if (idx === total - 1) {
+        nextBtn.style.display = 'none';
+        finishBtn.style.display = 'inline-flex';
+      } else {
+        nextBtn.style.display = 'inline-flex';
+        finishBtn.style.display = 'none';
+      }
+    }
+
+    function selectOneByOneOption(questionId, optionIdx) {
+      if (currentAttempt.userAnswers[questionId] !== undefined) return;
+      currentAttempt.userAnswers[questionId] = optionIdx;
+      renderOneByOneStage();
+    }
+
+    function navigateOneByOne(direction) {
+      const test = currentAttempt.activeTestObj;
+      const nextIdx = currentAttempt.currentIndex + direction;
+      if (nextIdx >= 0 && nextIdx < test.questions.length) {
+        currentAttempt.currentIndex = nextIdx;
+        renderOneByOneStage();
+      }
+    }
+
+    function jumpToOneByOneQuestion(index) {
+      currentAttempt.currentIndex = index;
+      renderOneByOneStage();
+    }
+
+    function finishOneByOneMode() {
+      const test = currentAttempt.activeTestObj;
+      const scoreContainer = document.getElementById('score-result-container');
+      scoreContainer.innerHTML = buildScoreBannerHTML(test);
+      scoreContainer.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
